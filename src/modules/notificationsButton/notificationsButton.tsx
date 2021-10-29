@@ -1,4 +1,3 @@
-import { useRoute } from "@react-navigation/core";
 import React, { useEffect } from "react";
 import { View } from "react-native";
 import { Icon, Button, Badge } from "react-native-elements";

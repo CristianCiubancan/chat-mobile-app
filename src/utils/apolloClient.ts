@@ -54,13 +54,8 @@ class WebSocketLink extends ApolloLink {
 }
 
 export let activeSocket: any;
-// export let timedOut: any;
 
 export const webSocketLink = () => {
-  // let pingSentAt = 0,
-  //   timedOut,
-  //   latency = 0;
-
   return new WebSocketLink({
     url: `ws://192.168.100.3:4000/graphql` as string,
     keepAlive: 10000,
@@ -69,24 +64,6 @@ export const webSocketLink = () => {
         client.refetchQueries({ include: "active" });
         activeSocket = socket;
       },
-      // ping: (received) => {
-      //   console.log(received);
-      //   if (!received /* sent */) {
-      //     pingSentAt = Date.now();
-      //     timedOut = setTimeout(() => {
-      //       if (activeSocket.readyState === WebSocket.OPEN) {
-      //         activeSocket.close(4408, "Request Timeout");
-      //       }
-      //     }, 5000); // wait 5 seconds for the pong and then close the connection
-      //   }
-      // },
-      // pong: (received) => {
-      //   if (received) {
-      //     console.log("pong log");
-      //     latency = Date.now() - pingSentAt;
-      //     clearTimeout(timedOut); // pong is received, clear connection close timeout
-      //   }
-      // },
       error: (err) => {
         console.log(err);
       },
@@ -186,6 +163,24 @@ export const client = new ApolloClient({
           newChatMessage: {
             keyArgs: ["chatId"],
             merge(existing, incoming, { cache, readField }) {
+              cache.modify({
+                fields: {
+                  getMessages(existingMessages = [], { readField }) {
+                    return {
+                      ...existingMessages,
+                      messages: [incoming, ...existingMessages.messages],
+                    };
+                  },
+                },
+              });
+            },
+          },
+        },
+      },
+      Mutation: {
+        fields: {
+          sendMessage: {
+            merge(existing, incoming, { cache }) {
               cache.modify({
                 fields: {
                   getMessages(existingMessages = [], { readField }) {
