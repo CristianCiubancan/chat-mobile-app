@@ -12,7 +12,6 @@ import { getMainDefinition, Observable } from "@apollo/client/utilities";
 import { host } from "../modules/shared/constants";
 import { Client, ClientOptions, createClient } from "graphql-ws";
 import ws from "isomorphic-ws";
-import { CommonActions } from "@react-navigation/routers";
 
 class WebSocketLink extends ApolloLink {
   private client: Client;
@@ -31,7 +30,6 @@ class WebSocketLink extends ApolloLink {
           complete: sink.complete.bind(sink),
           error: (err) => {
             console.log(err);
-            CommonActions.goBack();
             // if (err instanceof Error) {
             //   return sink.error(err);
             // }
@@ -55,39 +53,40 @@ class WebSocketLink extends ApolloLink {
   }
 }
 
+export let activeSocket: any;
+// export let timedOut: any;
+
 export const webSocketLink = () => {
-  let activeSocket: any,
-    timedOut: any,
-    pingSentAt = 0,
-    latency = 0;
+  // let pingSentAt = 0,
+  //   timedOut,
+  //   latency = 0;
 
   return new WebSocketLink({
     url: `ws://192.168.100.3:4000/graphql` as string,
     keepAlive: 10000,
     on: {
       opened: (socket: any) => {
-        console.log("socket opened");
+        client.refetchQueries({ include: "active" });
         activeSocket = socket;
       },
-      ping: (received) => {
-        if (!received /* sent */) {
-          pingSentAt = Date.now();
-          timedOut = setTimeout(() => {
-            if (activeSocket.readyState === WebSocket.OPEN) {
-              console.log("socket open");
-              activeSocket.close(4408, "Request Timeout");
-            }
-            console.log("socket closed");
-          }, 5000); // wait 5 seconds for the pong and then close the connection
-        }
-      },
-      pong: (received) => {
-        if (received) {
-          console.log("pong log");
-          latency = Date.now() - pingSentAt;
-          clearTimeout(timedOut); // pong is received, clear connection close timeout
-        }
-      },
+      // ping: (received) => {
+      //   console.log(received);
+      //   if (!received /* sent */) {
+      //     pingSentAt = Date.now();
+      //     timedOut = setTimeout(() => {
+      //       if (activeSocket.readyState === WebSocket.OPEN) {
+      //         activeSocket.close(4408, "Request Timeout");
+      //       }
+      //     }, 5000); // wait 5 seconds for the pong and then close the connection
+      //   }
+      // },
+      // pong: (received) => {
+      //   if (received) {
+      //     console.log("pong log");
+      //     latency = Date.now() - pingSentAt;
+      //     clearTimeout(timedOut); // pong is received, clear connection close timeout
+      //   }
+      // },
       error: (err) => {
         console.log(err);
       },

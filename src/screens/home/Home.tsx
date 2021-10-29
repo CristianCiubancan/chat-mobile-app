@@ -9,7 +9,6 @@ import { Avatar, Button, Icon, Text } from "react-native-elements";
 
 export const Home = ({ navigation, route }: any) => {
   const userId = route.params.userId;
-  console.log(userId);
   const { data, loading } = useGetUsersQuery();
   const [startChat] = useCreateChatMutation({
     onCompleted: (data) => {

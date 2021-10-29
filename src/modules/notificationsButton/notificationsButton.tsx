@@ -84,7 +84,7 @@ export const NotificationsButton: React.FC<NotificationsButtonProps> = ({
   useNewMessagesSentToChatSubscription();
 
   //   path === "Chat" ? null :
-  return (
+  return path === "Chat" ? null : (
     <View>
       <Button
         onPress={() => {

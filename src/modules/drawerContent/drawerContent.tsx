@@ -4,7 +4,11 @@ import {
   DrawerItemList,
 } from "@react-navigation/drawer";
 import React from "react";
-import { useLogoutMutation, useMeQuery } from "../../generated/graphql";
+import {
+  MeDocument,
+  useLogoutMutation,
+  useMeQuery,
+} from "../../generated/graphql";
 import { client } from "../../utils/apolloClient";
 
 export function CustomDrawerContent(props: any) {
@@ -22,11 +26,11 @@ export function CustomDrawerContent(props: any) {
           onPress={async () => {
             await logout();
             await client.clearStore();
-            await client.resetStore();
             props.navigation.replace("Home ", {
               screen: "Home",
-              params: { chatId: undefined },
+              params: { chatId: null },
             });
+            await client.refetchQueries({ include: [MeDocument] });
           }}
         />
       ) : null}
