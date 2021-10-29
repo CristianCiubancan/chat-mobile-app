@@ -21,14 +21,16 @@ const MessageInput: React.FC<MessageInputProps> = ({ chatId }) => {
     <Formik
       initialValues={{ message: "" }}
       onSubmit={async (values, actions) => {
-        sendMessage({
-          variables: {
-            input: {
-              chatId,
-              text: values.message,
+        if (values.message !== "") {
+          sendMessage({
+            variables: {
+              input: {
+                chatId,
+                text: values.message,
+              },
             },
-          },
-        });
+          });
+        }
         actions.resetForm();
       }}>
       {({ handleSubmit }) => (

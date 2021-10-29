@@ -166,9 +166,20 @@ export const client = new ApolloClient({
               cache.modify({
                 fields: {
                   getMessages(existingMessages = [], { readField }) {
+                    const newArray = [];
+                    for (let message of existingMessages.messages) {
+                      if (
+                        JSON.stringify(message.__ref) ===
+                        JSON.stringify(incoming.__ref)
+                      ) {
+                      } else {
+                        newArray.push(message);
+                      }
+                    }
+
                     return {
                       ...existingMessages,
-                      messages: [incoming, ...existingMessages.messages],
+                      messages: [incoming, ...newArray],
                     };
                   },
                 },
@@ -184,9 +195,20 @@ export const client = new ApolloClient({
               cache.modify({
                 fields: {
                   getMessages(existingMessages = [], { readField }) {
+                    const newArray = [];
+                    for (let message of existingMessages.messages) {
+                      if (
+                        JSON.stringify(message.__ref) ===
+                        JSON.stringify(incoming.__ref)
+                      ) {
+                      } else {
+                        newArray.push(message);
+                      }
+                    }
+
                     return {
                       ...existingMessages,
-                      messages: [incoming, ...existingMessages.messages],
+                      messages: [incoming, ...newArray],
                     };
                   },
                 },

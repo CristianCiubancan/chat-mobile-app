@@ -7,6 +7,7 @@ import { toErrorMap } from "../../utils/toErrorMap";
 import { ValidateEmail } from "../../utils/validateEmail";
 import { InputField } from "../../modules/shared/InputField";
 import { client } from "../../utils/apolloClient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const Register = ({ navigation }: any) => {
   const [register, { loading }] = useRegisterMutation({});
@@ -26,6 +27,10 @@ export const Register = ({ navigation }: any) => {
           } else if (response.data?.register.user) {
             //succes behaviour
             resetForm({});
+            await AsyncStorage.setItem(
+              "CurrentUser",
+              JSON.stringify(response.data?.register.user)
+            );
             await client.clearStore();
             await client.resetStore();
             navigation.replace("Home ", {

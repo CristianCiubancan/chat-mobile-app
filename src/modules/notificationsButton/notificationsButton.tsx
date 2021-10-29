@@ -1,14 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { Icon, Button, Badge } from "react-native-elements";
 import {
+  GetUserChatsDocument,
   NewNotificationReceivedDocument,
   useNewMessagesSentToChatSubscription,
+  useNewReadMessageSubscription,
   useUserNotificationsQuery,
 } from "../../generated/graphql";
+import { client } from "../../utils/apolloClient";
 
 interface NotificationsButtonProps {
   navigation: any;
+  route: any;
   path?: string | undefined;
   chatId?: number | undefined;
 }
@@ -16,10 +20,21 @@ interface NotificationsButtonProps {
 export const NotificationsButton: React.FC<NotificationsButtonProps> = ({
   navigation,
   path,
+  route,
   chatId,
 }) => {
   const { data: notificationsData, subscribeToMore } =
     useUserNotificationsQuery();
+
+  const [currentScreenIsChat, setCurrentScreenIsChat] = useState(false);
+
+  const areWeOnChatPage = () => {
+    for (let arg of navigation.getState().routeNames) {
+      if (arg === "Chat") {
+        setCurrentScreenIsChat(true);
+      }
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = subscribeToMore({
@@ -75,12 +90,24 @@ export const NotificationsButton: React.FC<NotificationsButtonProps> = ({
             userNotifications: [...newArray],
           });
         }
+        if (currentScreenIsChat) {
+          client.refetchQueries({ include: [GetUserChatsDocument] });
+        }
       },
     });
     return () => unsubscribe();
   }, [chatId ? chatId : null]);
 
+  useEffect(() => {
+    areWeOnChatPage();
+  }, [notificationsData?.userNotifications]);
+
   useNewMessagesSentToChatSubscription();
+
+  useNewReadMessageSubscription({
+    shouldResubscribe: true,
+    onSubscriptionData: (data) => {},
+  });
 
   //   path === "Chat" ? null :
   return path === "Chat" ? null : (

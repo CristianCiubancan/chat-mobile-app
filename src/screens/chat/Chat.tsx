@@ -6,7 +6,6 @@ import {
   useGetChatQuery,
   useGetMessagesQuery,
   useNewChatMessageSubscription,
-  useNewReadMessageSubscription,
   useReadChatMessageMutation,
 } from "../../generated/graphql";
 import MessageInput from "../../modules/messageInput/messageInput";
@@ -34,6 +33,7 @@ export const Chat = ({ route, navigation }: any) => {
                   navigation={navigation}
                   path={path}
                   chatId={chatId}
+                  route={route}
                 />
                 <Avatar rounded source={{ uri: member.profilePicUrl }} />
               </View>
@@ -61,7 +61,7 @@ export const Chat = ({ route, navigation }: any) => {
     onCompleted: (data) => {
       if (data.getMessages?.messages[0]) {
         let isChatRead = false;
-        for (let reader of data.getMessages?.messages[0].readers) {
+        for (let reader of data.getMessages?.messages[0].readersInfo.readers) {
           if (reader.reader.id === userId) {
             isChatRead = true;
           }
@@ -95,11 +95,6 @@ export const Chat = ({ route, navigation }: any) => {
           },
         });
     },
-  });
-
-  useNewReadMessageSubscription({
-    shouldResubscribe: true,
-    onSubscriptionData: (data) => {},
   });
 
   return !messagesData ? (

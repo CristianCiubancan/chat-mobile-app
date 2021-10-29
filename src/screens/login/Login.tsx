@@ -1,11 +1,12 @@
 import { Field, Formik } from "formik";
 import * as React from "react";
-import { View } from "react-native";
 import { Button } from "react-native-elements";
 import { useLoginMutation } from "../../generated/graphql";
 import { toErrorMap } from "../../utils/toErrorMap";
 import { InputField } from "../../modules/shared/InputField";
 import { client } from "../../utils/apolloClient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { View } from "react-native";
 
 export const Login = ({ navigation }: any) => {
   const [login, { loading }] = useLoginMutation({});
@@ -22,6 +23,10 @@ export const Login = ({ navigation }: any) => {
         } else if (response.data?.login.user) {
           //succes behaviour
           resetForm({});
+          await AsyncStorage.setItem(
+            "CurrentUser",
+            JSON.stringify(response.data?.login.user)
+          );
           await client.clearStore();
           await client.resetStore();
           navigation.replace("Home ", {

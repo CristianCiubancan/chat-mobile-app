@@ -21,6 +21,7 @@ export const ChatsList = ({ navigation, route }: any) => {
           return null;
         }
         const userChatWithName = getChatWithName(chat, userId);
+        // const userChatWithName = { name: "dummy", profilePic: "hyyp" };
         const isChatRead = hasUserReadTheChat(chat, userId);
         return (
           <Pressable

@@ -51,7 +51,9 @@ const HomeStack = ({ navigation, route }: any) => {
         headerTintColor: "white",
         drawerActiveBackgroundColor: "#319795",
         drawerActiveTintColor: "white",
-        headerRight: () => <NotificationsButton navigation={navigation} />,
+        headerRight: () => (
+          <NotificationsButton navigation={navigation} route={route} />
+        ),
         headerRightContainerStyle: { paddingRight: 15 },
       }}>
       <Drawer.Screen name="Home" component={Home} initialParams={{ userId }} />
