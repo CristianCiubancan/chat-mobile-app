@@ -104,7 +104,6 @@ export const client = new ApolloClient({
               cache.modify({
                 fields: {
                   getUserChats(existingUserChats = [], { readField }) {
-                    let didUpdate = false;
                     if (!existingUserChats) {
                       return [incoming];
                     }
@@ -112,16 +111,12 @@ export const client = new ApolloClient({
                       if (
                         JSON.stringify(incoming) === JSON.stringify(chatRef)
                       ) {
-                        didUpdate = true;
                       } else {
                         return chatRef;
                       }
                     });
-                    if (didUpdate) {
-                      return [incoming, ...newArray];
-                    } else {
-                      return [incoming, ...newArray];
-                    }
+
+                    return [incoming, ...newArray];
                   },
                 },
               });
@@ -133,28 +128,19 @@ export const client = new ApolloClient({
               cache.modify({
                 fields: {
                   getUserChats(existingUserChats = [], { readField }) {
-                    let didUpdate = false;
-
                     if (!existingUserChats) {
                       return [incoming];
                     }
-
                     const newArray = existingUserChats.map((chatRef: any) => {
                       if (
                         JSON.stringify(incoming) === JSON.stringify(chatRef)
                       ) {
-                        didUpdate = true;
-                        return incoming;
                       } else {
                         return chatRef;
                       }
                     });
 
-                    if (didUpdate) {
-                      return newArray;
-                    } else {
-                      return existingUserChats;
-                    }
+                    return [incoming, ...newArray];
                   },
                 },
               });
