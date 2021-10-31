@@ -1,7 +1,11 @@
 import { Field, Formik } from "formik";
 import * as React from "react";
 import { Button } from "react-native-elements";
-import { useLoginMutation } from "../../generated/graphql";
+import {
+  GetUsersDocument,
+  MeDocument,
+  useLoginMutation,
+} from "../../generated/graphql";
 import { toErrorMap } from "../../utils/toErrorMap";
 import { InputField } from "../../modules/shared/InputField";
 import { client } from "../../utils/apolloClient";
@@ -28,10 +32,12 @@ export const Login = ({ navigation }: any) => {
             JSON.stringify(response.data?.login.user)
           );
           await client.clearStore();
-          await client.resetStore();
+          await client.refetchQueries({
+            include: [MeDocument, GetUsersDocument],
+          });
           navigation.replace("Home ", {
             screen: "Home",
-            params: { chatId: response.data.login.user.id },
+            params: { userId: response.data.login.user.id },
           });
         }
       }}>

@@ -2,7 +2,11 @@ import { Field, Formik } from "formik";
 import * as React from "react";
 import { View } from "react-native";
 import { Button } from "react-native-elements";
-import { useRegisterMutation } from "../../generated/graphql";
+import {
+  GetUsersDocument,
+  MeDocument,
+  useRegisterMutation,
+} from "../../generated/graphql";
 import { toErrorMap } from "../../utils/toErrorMap";
 import { ValidateEmail } from "../../utils/validateEmail";
 import { InputField } from "../../modules/shared/InputField";
@@ -32,10 +36,12 @@ export const Register = ({ navigation }: any) => {
               JSON.stringify(response.data?.register.user)
             );
             await client.clearStore();
-            await client.resetStore();
+            await client.refetchQueries({
+              include: [MeDocument, GetUsersDocument],
+            });
             navigation.replace("Home ", {
               screen: "Home",
-              params: { chatId: response.data.register.user.id },
+              params: { userId: response.data.register.user.id },
             });
           }
         }

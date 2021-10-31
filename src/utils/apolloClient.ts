@@ -30,22 +30,6 @@ class WebSocketLink extends ApolloLink {
           complete: sink.complete.bind(sink),
           error: (err) => {
             console.log(err);
-            // if (err instanceof Error) {
-            //   return sink.error(err);
-            // }
-            // if (err instanceof CloseEvent) {
-            //   return sink.error(
-            //     // reason will be available on clean closes
-            //     new Error(
-            //       `Socket closed with event ${err.code} ${err.reason || ""}`
-            //     )
-            //   );
-            // }
-            // return sink.error(
-            //   new Error(
-            //     (err as GraphQLError[]).map(({ message }) => message).join(", ")
-            //   )
-            // );
           },
         }
       );
@@ -57,12 +41,16 @@ export let activeSocket: any;
 
 export const webSocketLink = () => {
   return new WebSocketLink({
-    url: `ws://192.168.100.3:4000/graphql` as string,
+    url: `${host}/graphql` as string,
     keepAlive: 10000,
     on: {
       opened: (socket: any) => {
+        console.log("sock started");
         client.refetchQueries({ include: "active" });
         activeSocket = socket;
+      },
+      closed: (event) => {
+        console.log(event);
       },
       error: (err) => {
         console.log(err);
@@ -135,12 +123,13 @@ export const client = new ApolloClient({
                       if (
                         JSON.stringify(incoming) === JSON.stringify(chatRef)
                       ) {
+                        return incoming;
                       } else {
                         return chatRef;
                       }
                     });
 
-                    return [incoming, ...newArray];
+                    return newArray;
                   },
                 },
               });
@@ -148,6 +137,7 @@ export const client = new ApolloClient({
           },
           newChatMessage: {
             keyArgs: ["chatId"],
+
             merge(existing, incoming, { cache, readField }) {
               cache.modify({
                 fields: {

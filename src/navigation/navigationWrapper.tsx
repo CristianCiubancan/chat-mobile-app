@@ -9,17 +9,19 @@ export const NavigationWrapper = () => {
 
   const forceUpdate = async (newState: any) => {
     const sock = activeSocket;
-    if (newState === "background") {
+    if (newState === "inactive") {
       if (sock) await sock.close(1000, "normal closure");
     }
     if (newState === "active") {
-      // if (sock && sock.readyState === WebSocket.OPEN) {
-      //   await client.refetchQueries({ include: "active" });
-      // }
-      client.refetchQueries({ include: "active" });
+      if (sock && sock.readyState === WebSocket.OPEN) {
+        await sock.close(4205, "Client Restart");
+        await client.refetchQueries({ include: "active" });
+      }
+
       if (sock && sock.readyState === WebSocket.CLOSED) {
         await sock.close(4205, "Client Restart");
       }
+      client.refetchQueries({ include: "active" });
     }
   };
 

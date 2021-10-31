@@ -9,6 +9,7 @@ import { ChatsList } from "../screens/chatsList/ChatsList";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NotificationsButton } from "../modules/notificationsButton/notificationsButton";
 import { Chat } from "../screens/chat/Chat";
+import { Profile } from "../screens/profile/profile";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -49,6 +50,7 @@ const HomeStack = ({ navigation, route }: any) => {
       screenOptions={{
         headerStyle: { backgroundColor: "#008080" },
         headerTintColor: "white",
+        drawerStyle: {},
         drawerActiveBackgroundColor: "#319795",
         drawerActiveTintColor: "white",
         headerRight: () => (
@@ -57,6 +59,7 @@ const HomeStack = ({ navigation, route }: any) => {
         headerRightContainerStyle: { paddingRight: 15 },
       }}>
       <Drawer.Screen name="Home" component={Home} initialParams={{ userId }} />
+      <Drawer.Screen name="Profile" component={Profile} />
       <Drawer.Screen
         name="Chats"
         component={ChatsList}
@@ -82,7 +85,10 @@ export const Navigation = ({ userId }: any) => {
         />
         <Stack.Screen
           name="Chat"
-          options={{ title: " " }}
+          options={{
+            headerBackTitle: "",
+            title: " ",
+          }}
           component={Chat}
           initialParams={{ userId }}
         />
